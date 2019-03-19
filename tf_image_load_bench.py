@@ -18,31 +18,36 @@ def load_one_image(path):
     image = tf.reshape(image, [3, 504, 960])
 
     # TOGGLE THIS:
-    #image = tf.cast(image, tf.float32)
+    image = tf.cast(image, tf.float32)
     return {'image': image, 'path': path}
 
+
 def run():
-    batch_size = 32
+    tfdata = True
     dataset = tf.data.Dataset.from_generator(
         imagename_gen, (tf.string), output_shapes=tf.TensorShape(None))
 
-    dataset = dataset.map(load_one_image)
-    dataset = dataset.batch(batch_size)
-    get_next = dataset.make_one_shot_iterator().get_next()
+    if tfdata:
+        print("---- use tf.data.map() ----")
+        dataset = dataset.map(load_one_image)
+        get_next = dataset.make_one_shot_iterator().get_next()
+    else:
+        print("---- use plain tf ----")
+        ds_next = dataset.make_one_shot_iterator().get_next()
+        get_next = load_one_image(ds_next)
 
     with tf.Session() as sess:
         start_time = time.time()
 
-        for batch_count in range(200):
+        for i in range(5000):
             row = sess.run(get_next)
 
-            if batch_count % 20 == 19:
-                print(row)
-                print("-- {} images/sec".format(
-                    (batch_count * batch_size) / (time.time() - start_time)))
+            if i % 200 == 199:
+                print("-- {} images/sec".format(i / (time.time() - start_time)))
 
-        print("Finished {} batches in {} secs".format(
-            batch_count, time.time() - start_time))
+        print("{}: Finished {} images in {} secs".format(
+            "tfdata.map" if tfdata else "plain tf",
+            i, time.time() - start_time))
 
 
 
