@@ -10,7 +10,7 @@ import tensorflow as tf
 
 def imagename_gen():
     while True:
-        yield "/data/testimage.fp16"
+        yield "testimage.fp16"
 
 def load_one_image(path):
     data = tf.read_file(path)
