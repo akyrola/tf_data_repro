@@ -40,7 +40,7 @@ def run():
         start_time = time.time()
 
         for i in range(5000):
-            row = sess.run(get_next)
+            _ = sess.run(get_next['image'].op)
 
             if i % 200 == 199:
                 print("-- {} images/sec".format(i / (time.time() - start_time)))
