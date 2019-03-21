@@ -1,3 +1,19 @@
+## tf.data map issues
+
+See: [tf_image_load_bench.py](tf_image_load_bench.py).
+
+This benchmark surfaces strange behaviour of using `tf.data.map` with a `cast` call.
+The below table shows the problem: adding a cast in our `tf.data.map` operation
+is surprisingly slow, and uses a lot of CPU resources.
+
+|       | fp16           | +cast(fp32)    |
+|-------|----------------|----------------|
+| map   | 11s (120% CPU) | 23s (**350% CPU**) |
+| plain | 27s (100% CPU) | 26s (100% CPU) |
+
+
+## Dummy Benchmark
+
 Repro issue with TF.data performance:
 
 dummy_dataset.cc is a tf.data operator that return a specified number of integer scalar tensors (parameter "n").
